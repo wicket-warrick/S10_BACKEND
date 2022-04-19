@@ -3,39 +3,32 @@ const fs = require("fs").promises;
 const minimist = require("minimist");
 const chalk = require("chalk");
 const fileName = "listaTarefas.json";
-const { writeJson, createJson } = require("./helpers");
+const { createTask, print, planner } = require("./helpers.js");
 
 const pathFile = path.join(__dirname, fileName);
-
 const argsTask = minimist(process.argv.slice(2));
-const { d, m, y } = argsTask;
-// const task = argsTask._.reduce((a, b) => `${a} ${b}`);
-const newTask = {
-  dia: d,
-  mes: m,
-  ano: y,
-  // tarefa: task,
-};
+const { d, m, y, p } = argsTask;
 
 console.log(chalk.black.bgYellow.bold("benvido ó teu organizador"));
 console.log();
-
-const planner = async (path, content) => {
-  let data;
-  let listaTarefas;
-  try {
-    data = await fs.readFile(path, "utf-8");
-    listaTarefas = JSON.parse(data);
-    console.log(chalk.black.bgBlue.bold(`O arquivo ${fileName} xa existe.`));
-  } catch {
+if (p) {
+  print(pathFile);
+} else if (!d || !m || !y) {
+  console.log(chalk.black.bgRed.bold("Debes introducir a data completa"));
+} else if (d && m && y) {
+  if (typeof d !== "number" || typeof m !== "number" || typeof y !== "number") {
     console.log(
-      chalk.black.bgBlue.bold(
-        `O arquivo ${fileName} non existe. Crearemolo por ti`
-      )
+      chalk.black.bgRed.bold("Os valores para día,mes e ano, deben ser numeros")
     );
-    console.log();
-    await createJson(path, content);
-  }
-};
+  } else {
+    const task = createTask(argsTask);
+    const newTask = {
+      dia: d,
+      mes: m,
+      ano: y,
+      tarefa: task,
+    };
 
-planner(pathFile, newTask);
+    planner(pathFile, newTask, fileName);
+  }
+}
