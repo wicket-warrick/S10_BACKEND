@@ -18,8 +18,6 @@ const writeJson = async (path, content) => {
 const createJson = async (path, content) => {
   try {
     let listaTarefas = [];
-    listaTarefas.push(content);
-    listaTarefas.push(content);
     await fs.writeFile(path, JSON.stringify(listaTarefas));
     console.log(chalk.black.bgGreen.bold("Arquivo creado correctamente"));
     console.log();

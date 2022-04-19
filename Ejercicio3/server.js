@@ -4,8 +4,6 @@ const express = require("express");
 const app = express();
 const chalck = require("chalk");
 
-console.log(__filename);
-
 app.use((req, res, next) => {
   const reqInfo = {
     requestType: req.method,
@@ -16,7 +14,6 @@ app.use((req, res, next) => {
     reqQuery: req.query,
   };
   console.log(reqInfo);
-
   next();
 });
 app.get("/hour", (req, res) => {
@@ -36,11 +33,18 @@ app.listen(API_PORT, () => {
 
 app.use((error, req, res, next) => {
   console.error(error);
-  res.statusCode = 500;
-  res.send("Something went wrong :(");
+  res.statusCode = error.httpStatus || 500;
+  res.send({
+    status: "error",
+    message: error.message,
+  });
 });
 
 app.use((req, res) => {
   res.statusCode = 404;
   res.send("not found :(");
+  res.send({
+    status: "error",
+    message: "not found",
+  });
 });
